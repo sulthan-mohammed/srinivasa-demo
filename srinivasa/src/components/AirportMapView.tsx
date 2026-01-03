@@ -3,6 +3,7 @@ import { View, StyleSheet, Dimensions } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE, Polyline } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { Colors } from '../utils/colors';
+import { PickupMarker, DestinationMarker } from './Icons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -45,16 +46,18 @@ const AirportMapView = ({ pickup, dropoff, apiKey }: AirportMapViewProps) => {
                 {pickup && (
                     <Marker
                         coordinate={pickup}
-                        title="Pickup"
-                        pinColor={Colors.primary}
-                    />
+                        anchor={{ x: 0.5, y: 0.5 }}
+                    >
+                        <PickupMarker />
+                    </Marker>
                 )}
                 {dropoff && (
                     <Marker
                         coordinate={dropoff}
-                        title="Airport"
-                        pinColor={Colors.alert}
-                    />
+                        anchor={{ x: 0.5, y: 0.5 }}
+                    >
+                        <DestinationMarker />
+                    </Marker>
                 )}
                 {pickup && dropoff && (
                     <MapViewDirections

@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React from 'react';
+import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { Colors } from '../utils/colors';
 
@@ -149,4 +150,41 @@ export const ShieldIcon: React.FC<IconProps> = ({ size = 24, color = Colors.succ
             fill={color}
         />
     </Svg>
+);
+
+export const PickupMarker = () => (
+    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <Svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+            <Path
+                d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z"
+                fill={Colors.primary}
+                stroke="#FFFFFF"
+                strokeWidth="1"
+            />
+        </Svg>
+    </View>
+);
+
+export const DestinationMarker = () => (
+    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{
+            backgroundColor: Colors.primary,
+            padding: 6,
+            borderRadius: 6,
+            borderWidth: 2,
+            borderColor: '#FFFFFF',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 4,
+            elevation: 5,
+        }}>
+            <Svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <Path
+                    d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"
+                    fill="#FFFFFF"
+                />
+            </Svg>
+        </View>
+    </View>
 );

@@ -37,7 +37,7 @@ const AirportModeTabs = ({ mode, onModeChange }: AirportModeTabsProps) => {
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: Spacing.lg,
-        marginTop: Spacing.sm,
+        marginTop: Spacing.md,
         marginBottom: Spacing.md,
         alignItems: 'center',
     },
