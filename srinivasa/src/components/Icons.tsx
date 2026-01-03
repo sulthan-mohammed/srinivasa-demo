@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { Colors } from '../utils/colors';
 
@@ -188,3 +188,50 @@ export const DestinationMarker = () => (
         </View>
     </View>
 );
+
+export const TopDownVehicleMarker = ({ type = 'car', color = Colors.primary }: { type?: string, color?: string }) => {
+    // Top-down car shape path
+    const getPath = () => {
+        switch (type) {
+            case 'auto':
+                return "M6 2h12v4H6V2zm-2 5h16v13H4V7zm2 2v9h12V9H6z";
+            case 'suv':
+                return "M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2v8h8V8H8z";
+            case 'minivan':
+                return "M2 6h20v12H2V6zm2 2v8h16V8H4zm2 2v4h12v-4H6z";
+            case 'ev':
+                return "M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z";
+            default:
+                return "M7 2h10c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2z m1 4h8v12H8V6z";
+        }
+    };
+
+    return (
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{
+                width: 38,
+                height: 38,
+                borderRadius: 19,
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                justifyContent: 'center',
+                alignItems: 'center',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.2,
+                shadowRadius: 4,
+                elevation: 4,
+                borderWidth: 1.5,
+                borderColor: color,
+            }}>
+                <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <Path
+                        d={getPath()}
+                        fill={color}
+                        stroke={color}
+                        strokeWidth="0.5"
+                    />
+                </Svg>
+            </View>
+        </View>
+    );
+};

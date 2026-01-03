@@ -18,6 +18,8 @@ import DateTimePickerModal from '../components/DateTimePickerModal';
 import SearchLocationModal from '../components/SearchLocationModal';
 import { useLocation } from '../hooks/useLocation';
 import moment from 'moment';
+import VehicleSelectionModal from '../components/VehicleSelectionModal';
+import BookingLoadingModal from '../components/BookingLoadingModal';
 
 const GOOGLE_MAPS_API_KEY = 'AIzaSyDYjHQx5xcjnoCBw1DcSEINcKulOUE9nvw';
 const HYDERABAD_AIRPORT = {
@@ -35,20 +37,38 @@ const AirportBookingScreen = ({ navigation }: any) => {
     const [showSearchModal, setShowSearchModal] = useState<{ visible: boolean, type: 'pickup' | 'dropoff' }>({ visible: false, type: 'dropoff' });
     const [scheduledDateTime, setScheduledDateTime] = useState<{ date: string, time: string } | null>(null);
     const [selectedLocationCoords, setSelectedLocationCoords] = useState<{ latitude: number, longitude: number } | null>(null);
+    const [showVehicleModal, setShowVehicleModal] = useState(false);
+    const [searchingRide, setSearchingRide] = useState(false);
+    const [confirmedVehicle, setConfirmedVehicle] = useState<any>(null);
 
     const handleContinue = () => {
-        const pickup = mode === 'toAirport'
-            ? (currentLocation?.address || 'My Location')
-            : HYDERABAD_AIRPORT.name;
-        const dropoff = mode === 'fromAirport'
-            ? userInput
-            : HYDERABAD_AIRPORT.name;
+        if (!isFormValid) return;
+        setShowVehicleModal(true);
+    };
 
-        navigation.navigate('MapRoute', {
-            pickup,
-            dropoff,
-            scheduledAt: scheduledDateTime ? `${scheduledDateTime.date} ${scheduledDateTime.time}` : null
-        });
+    const handleConfirmVehicle = (vehicle: any) => {
+        setShowVehicleModal(false);
+        setConfirmedVehicle(vehicle);
+        setSearchingRide(true);
+
+        // Simulate searching for 6 seconds
+        setTimeout(() => {
+            setSearchingRide(false);
+            const pickup = mode === 'toAirport'
+                ? (currentLocation?.address || 'My Location')
+                : HYDERABAD_AIRPORT.name;
+            const dropoff = mode === 'fromAirport'
+                ? userInput
+                : HYDERABAD_AIRPORT.name;
+
+            navigation.navigate('MapRoute', {
+                pickup,
+                dropoff,
+                vehicle: vehicle.name,
+                price: vehicle.price,
+                scheduledAt: scheduledDateTime ? `${scheduledDateTime.date} ${scheduledDateTime.time}` : null
+            });
+        }, 10000);
     };
 
     const isFormValid = mode === 'toAirport'
@@ -204,6 +224,17 @@ const AirportBookingScreen = ({ navigation }: any) => {
                     setUserInput(loc.name);
                     setSelectedLocationCoords({ latitude: loc.latitude, longitude: loc.longitude });
                 }}
+            />
+
+            <VehicleSelectionModal
+                visible={showVehicleModal}
+                onClose={() => setShowVehicleModal(false)}
+                onConfirm={handleConfirmVehicle}
+            />
+
+            <BookingLoadingModal
+                visible={searchingRide}
+                vehicleName={confirmedVehicle?.name || 'Ride'}
             />
         </SafeAreaView>
     );

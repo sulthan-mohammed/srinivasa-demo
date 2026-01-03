@@ -1,11 +1,39 @@
 import React, { useRef, useEffect } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE, Polyline } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
+import { Image } from 'react-native';
 import { Colors } from '../utils/colors';
 import { PickupMarker, DestinationMarker } from './Icons';
 
+// Re-import vehicle PNGs for map markers
+const VEHICLE_IMAGES: { [key: string]: any } = {
+    car: require('../assets/vehicles/mini.png'),
+    auto: require('../assets/vehicles/auto.png'),
+    ev: require('../assets/vehicles/ev.png'),
+    suv: require('../assets/vehicles/suv.png'),
+    minivan: require('../assets/vehicles/minivan.png'),
+};
+
 const { width, height } = Dimensions.get('window');
+
+// Hyderabad bounding box
+const HYD_LAT_MIN = 17.30;
+const HYD_LAT_MAX = 17.50;
+const HYD_LNG_MIN = 78.30;
+const HYD_LNG_MAX = 78.60;
+
+const VEHICLE_TYPES = ['car', 'auto', 'ev', 'suv', 'minivan'];
+
+interface VehicleData {
+    id: number;
+    latitude: number;
+    longitude: number;
+    type: string;
+    rotation: number;
+    dx: number; // Direction X
+    dy: number; // Direction Y
+}
 
 interface Location {
     latitude: number;
@@ -20,6 +48,48 @@ interface AirportMapViewProps {
 
 const AirportMapView = ({ pickup, dropoff, apiKey }: AirportMapViewProps) => {
     const mapRef = useRef<MapView>(null);
+    const [dummyVehicles, setDummyVehicles] = React.useState<VehicleData[]>([]);
+
+    // Initialize dummy vehicles once
+    useEffect(() => {
+        const vehicles: VehicleData[] = [];
+        for (let i = 0; i < 15; i++) {
+            vehicles.push({
+                id: i,
+                latitude: HYD_LAT_MIN + Math.random() * (HYD_LAT_MAX - HYD_LAT_MIN),
+                longitude: HYD_LNG_MIN + Math.random() * (HYD_LNG_MAX - HYD_LNG_MIN),
+                type: VEHICLE_TYPES[Math.floor(Math.random() * VEHICLE_TYPES.length)],
+                rotation: Math.random() * 360,
+                dx: (Math.random() - 0.5) * 0.0001,
+                dy: (Math.random() - 0.5) * 0.0001,
+            });
+        }
+        setDummyVehicles(vehicles);
+    }, []);
+
+    // Move vehicles smoothly
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setDummyVehicles(prev => prev.map(v => {
+                // Occasionally change direction slightly
+                const newDx = Math.random() > 0.9 ? (Math.random() - 0.5) * 0.0001 : v.dx;
+                const newDy = Math.random() > 0.9 ? (Math.random() - 0.5) * 0.0001 : v.dy;
+
+                // Calculate rotation based on direction
+                const newRotation = Math.atan2(newDy, newDx) * (180 / Math.PI) + 90;
+
+                return {
+                    ...v,
+                    latitude: v.latitude + newDy,
+                    longitude: v.longitude + newDx,
+                    rotation: newRotation,
+                    dx: newDx,
+                    dy: newDy,
+                };
+            }));
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         if (pickup && dropoff && mapRef.current) {
@@ -43,6 +113,22 @@ const AirportMapView = ({ pickup, dropoff, apiKey }: AirportMapViewProps) => {
                     longitudeDelta: 0.0421,
                 }}
             >
+                {dummyVehicles.map(v => (
+                    <Marker
+                        key={`vehicle-${v.id}`}
+                        coordinate={{ latitude: v.latitude, longitude: v.longitude }}
+                        flat
+                        anchor={{ x: 0.5, y: 0.5 }}
+                        rotation={v.rotation}
+                    >
+                        <Image
+                            source={VEHICLE_IMAGES[v.type]}
+                            style={{ width: 38, height: 38 }}
+                            resizeMode="contain"
+                        />
+                    </Marker>
+                ))}
+
                 {pickup && (
                     <Marker
                         coordinate={pickup}
