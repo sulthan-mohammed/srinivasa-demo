@@ -17,11 +17,16 @@ const VEHICLE_IMAGES: { [key: string]: any } = {
 
 const { width, height } = Dimensions.get('window');
 
-// Hyderabad bounding box
+// Hyderabad bounding box (City)
 const HYD_LAT_MIN = 17.30;
 const HYD_LAT_MAX = 17.50;
 const HYD_LNG_MIN = 78.30;
 const HYD_LNG_MAX = 78.60;
+
+// Airport bounding box
+const AIRPORT_LAT = 17.2403;
+const AIRPORT_LNG = 78.4294;
+const AIRPORT_OFFSET = 0.015;
 
 const VEHICLE_TYPES = ['car', 'auto', 'ev', 'suv', 'minivan'];
 
@@ -53,7 +58,9 @@ const AirportMapView = ({ pickup, dropoff, apiKey }: AirportMapViewProps) => {
     // Initialize dummy vehicles once
     useEffect(() => {
         const vehicles: VehicleData[] = [];
-        for (let i = 0; i < 15; i++) {
+
+        // City Vehicles (8)
+        for (let i = 0; i < 8; i++) {
             vehicles.push({
                 id: i,
                 latitude: HYD_LAT_MIN + Math.random() * (HYD_LAT_MAX - HYD_LAT_MIN),
@@ -64,6 +71,20 @@ const AirportMapView = ({ pickup, dropoff, apiKey }: AirportMapViewProps) => {
                 dy: (Math.random() - 0.5) * 0.0001,
             });
         }
+
+        // Airport Area Vehicles (4) - Clustered around the airport terminal
+        for (let i = 8; i < 12; i++) {
+            vehicles.push({
+                id: i,
+                latitude: AIRPORT_LAT + (Math.random() - 0.5) * AIRPORT_OFFSET,
+                longitude: AIRPORT_LNG + (Math.random() - 0.5) * AIRPORT_OFFSET,
+                type: VEHICLE_TYPES[Math.floor(Math.random() * VEHICLE_TYPES.length)],
+                rotation: Math.random() * 360,
+                dx: (Math.random() - 0.5) * 0.00015,
+                dy: (Math.random() - 0.5) * 0.00015,
+            });
+        }
+
         setDummyVehicles(vehicles);
     }, []);
 

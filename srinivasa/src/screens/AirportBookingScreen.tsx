@@ -112,7 +112,10 @@ const AirportBookingScreen = ({ navigation }: any) => {
                         <LocationInput
                             label="PICKUP LOCATION"
                             value={currentLocation?.address || (locationLoading ? 'Fetching location...' : 'My Location')}
-                            onPress={() => setShowSearchModal({ visible: true, type: 'pickup' })}
+                            onPress={() => {
+                                setSelectedLocationCoords(null);
+                                setShowSearchModal({ visible: true, type: 'pickup' });
+                            }}
                             placeholder="Detecting your location..."
                             disabled={false}
                         />
@@ -132,7 +135,11 @@ const AirportBookingScreen = ({ navigation }: any) => {
                         <LocationInput
                             label="DROP LOCATION"
                             value={userInput}
-                            onPress={() => setShowSearchModal({ visible: true, type: 'dropoff' })}
+                            onPress={() => {
+                                setUserInput('');
+                                setSelectedLocationCoords(null);
+                                setShowSearchModal({ visible: true, type: 'dropoff' });
+                            }}
                             placeholder="Search drop-off address"
                             disabled={false}
                         />
@@ -143,7 +150,7 @@ const AirportBookingScreen = ({ navigation }: any) => {
             {/* 3. Map (Remaining Space) */}
             <View style={styles.mapFlexContainer}>
                 <AirportMapView
-                    key={mode}
+                    key={`${mode}-${selectedLocationCoords?.latitude || 'none'}-${selectedLocationCoords?.longitude || 'none'}`}
                     pickup={mapPickup}
                     dropoff={mapDropoff}
                     apiKey={GOOGLE_MAPS_API_KEY}
