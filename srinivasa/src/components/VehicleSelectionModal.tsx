@@ -125,13 +125,16 @@ const VehicleSelectionModal = ({ visible, onClose, onConfirm }: VehicleSelection
                                                 <Text style={styles.evText}>EV</Text>
                                             </View>
                                         )}
-                                        <View style={styles.capacityRow}>
-                                            <PersonIcon size={14} color={Colors.textTertiary} />
-                                            <Text style={styles.capacityText}>{item.capacity}</Text>
-                                        </View>
                                     </View>
                                     <Text style={styles.description} numberOfLines={1}>{item.description}</Text>
-                                    <Text style={styles.eta}>{item.eta} away</Text>
+                                    <View style={styles.detailsRow}>
+                                        <Text style={styles.eta}>{item.eta} away</Text>
+                                        <Text style={styles.dot}>•</Text>
+                                        <View style={styles.capacityRow}>
+                                            <PersonIcon size={12} color={Colors.textTertiary} />
+                                            <Text style={styles.capacityText}>{item.capacity} seats</Text>
+                                        </View>
+                                    </View>
                                 </View>
                                 <View style={styles.priceContainer}>
                                     <Text style={styles.price}>{item.price}</Text>
@@ -214,8 +217,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.accent,
     },
     vehicleImage: {
-        width: 70,
-        height: 50,
+        width: 85,
+        height: 60,
         marginRight: Spacing.md,
     },
     vehicleInfo: {
@@ -225,6 +228,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
+    },
+    detailsRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 4,
+    },
+    dot: {
+        ...Typography.small,
+        color: Colors.textTertiary,
+        marginHorizontal: 6,
     },
     vehicleName: {
         ...Typography.bodyMedium,
@@ -245,7 +258,6 @@ const styles = StyleSheet.create({
     capacityRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginLeft: 'auto',
     },
     capacityText: {
         ...Typography.small,
@@ -260,8 +272,7 @@ const styles = StyleSheet.create({
     eta: {
         ...Typography.small,
         color: Colors.primary,
-        fontWeight: '600',
-        marginTop: 2,
+        fontWeight: '700',
     },
     priceContainer: {
         marginLeft: Spacing.sm,
