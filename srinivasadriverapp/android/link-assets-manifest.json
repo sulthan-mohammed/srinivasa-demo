@@ -1,0 +1,101 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/Rubik/Rubik-Black.ttf",
+      "sha1": "d61e5c84ab77f113b9ebdd527720a49dd598ea9e"
+    },
+    {
+      "path": "src/assets/fonts/Rubik/Rubik-BlackItalic.ttf",
+      "sha1": "f5b58e1b03bf7a5475d86aa33ca8bddc986a1527"
+    },
+    {
+      "path": "src/assets/fonts/Rubik/Rubik-Bold.ttf",
+      "sha1": "09e3c313a1032db53ec85a7ce09ac044e96886f8"
+    },
+    {
+      "path": "src/assets/fonts/Rubik/Rubik-BoldItalic.ttf",
+      "sha1": "55b4c263fdcf73057cdb754ed5bf96949e460bff"
+    },
+    {
+      "path": "src/assets/fonts/Rubik/Rubik-ExtraBold.ttf",
+      "sha1": "17fac00a1b17b541419fccaf68cbb512bc391093"
+    },
+    {
+      "path": "src/assets/fonts/Rubik/Rubik-ExtraBoldItalic.ttf",
+      "sha1": "11640b83ee75fcc0f635f95c2a6531c4f4503e59"
+    },
+    {
+      "path": "src/assets/fonts/Rubik/Rubik-Italic.ttf",
+      "sha1": "ca1dd58ff19d2a395aed6708e5782bb25f2843b7"
+    },
+    {
+      "path": "src/assets/fonts/Rubik/Rubik-Light.ttf",
+      "sha1": "f58e5f21af4258e1d897aae07630389355aad674"
+    },
+    {
+      "path": "src/assets/fonts/Rubik/Rubik-LightItalic.ttf",
+      "sha1": "892ee37889e6b59364a8f2ea242c4f6331cd9132"
+    },
+    {
+      "path": "src/assets/fonts/Rubik/Rubik-Medium.ttf",
+      "sha1": "c943a120e3373b44004228784cfe09e6e5b734db"
+    },
+    {
+      "path": "src/assets/fonts/Rubik/Rubik-MediumItalic.ttf",
+      "sha1": "a67239b39a362e959293077b08cb24d8162bee74"
+    },
+    {
+      "path": "src/assets/fonts/Rubik/Rubik-Regular.ttf",
+      "sha1": "a2c4051535895da77ef13b52e187e73ef3257f8f"
+    },
+    {
+      "path": "src/assets/fonts/Rubik/Rubik-SemiBold.ttf",
+      "sha1": "a13014a8a0017581036836a254673c12e7a98dc2"
+    },
+    {
+      "path": "src/assets/fonts/Rubik/Rubik-SemiBoldItalic.ttf",
+      "sha1": "82ba28ff16a4d0315ea26a035a8d398e4cd062ff"
+    },
+    {
+      "path": "src/assets/icons/add_circle.svg",
+      "sha1": "ef353190a296655a61ae4592264cc1aafe6ed13f"
+    },
+    {
+      "path": "src/assets/icons/arrow_up.svg",
+      "sha1": "45ba94d1fefe159633e0a1ca7c3c57d14e335455"
+    },
+    {
+      "path": "src/assets/icons/calender.svg",
+      "sha1": "152aa2b212f5611fb23f4f6251e82bf922729d52"
+    },
+    {
+      "path": "src/assets/icons/check.svg",
+      "sha1": "ea4a6b2a0ce482da9adca817fe0930d9bd13192c"
+    },
+    {
+      "path": "src/assets/icons/checkBtn.svg",
+      "sha1": "0aae21b355b6adbdf6011bf9c340cebff1852bb8"
+    },
+    {
+      "path": "src/assets/icons/error_outline.svg",
+      "sha1": "e9ea2729b6d4a6b9b5d4d840398295d9af11e5bd"
+    },
+    {
+      "path": "src/assets/icons/favorite.svg",
+      "sha1": "71923f4fd1cfb04fbc5d1921676018d16741f7bf"
+    },
+    {
+      "path": "src/assets/images/logo.png",
+      "sha1": "335f255b98effbaf73167bc6c553d812e54bc0e9"
+    },
+    {
+      "path": "src/assets/images/no_internet_connection.png",
+      "sha1": "b4d390c9b5739e7b7ea6011bf34f940d2c4c58fd"
+    },
+    {
+      "path": "src/assets/lottie-files/Loading.json",
+      "sha1": "9b3d85452c43bea21970fc141a0e7ddf37fb8c6c"
+    }
+  ]
+}

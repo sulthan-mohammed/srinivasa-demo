@@ -1,0 +1,236 @@
+# ECommerceApp - Cursor Rules
+
+## Code Style & Quality
+
+### No Inline Styles
+- **NEVER** use inline styles in components
+- All styles must be defined using `StyleSheet.create()` from `react-native`
+- Import and use styles from `CommonStyles.tsx` whenever possible
+- For component-specific styles, create a separate `StyleSheet.create()` at the bottom of the file
+
+### Color Management
+- **NEVER** hardcode color values (e.g., `#FFFFFF`, `rgb()`, etc.)
+- Always import colors from `src/constants/Colors.ts`
+- Use: `import { Colors } from '../constants'` or `import { primary, secondary } from '../constants/Colors'`
+- Available colors: primary, secondary, accent, info, backgroundColor, textLight, textDark, error, borderColor, success, warn, textOnPrimary, transparent, shadowColor, labelText, placeholder
+
+### Font & Typography
+- **NEVER** hardcode font weights or font families
+- Always use `FontConfig` from `src/constants/FontConfig.ts`
+- Use predefined text styles from `CommonStyles.tsx`:
+  - `textHeading` - For main headings
+  - `textSubheading` - For subheadings
+  - `textLabel` - For form labels and small labels
+  - `textValue` - For displaying values
+  - `textPrimary` - For primary text content
+  - `textSecondary` - For secondary/helper text
+  - `pageTitle` - For page titles
+
+### Common Functions
+- **ALWAYS** use common utility functions from `src/helpers/CommonFunctions.tsx`
+- For time conversions, use `formatTime()`, `formatDate()`, or `formatDateTime()` functions
+- Never create duplicate utility functions - check helpers first
+- Available platform helpers: `isAndroid()`, `isIOS()`
+
+### Icons & Images
+- **ONLY** use Google Material Icons (Material Design Icons)
+- **NEVER** use custom icons or third-party icon libraries
+- All icons must be consistent in color and size (use same SVG format)
+- **ALWAYS** import icons in `src/constants/ImageConfig.tsx` following the existing pattern
+- Use descriptive names with "Icon" prefix (e.g., `IconCheck`, `IconDatePicker`, `IconErrorOutline`)
+- Import pattern: `import IconName from '../assets/icons/icon_name.svg';`
+- Export in ImageConfig with consistent naming
+- Use icons from `ImageConfig` in components: `import { ImageConfig } from '../constants'`
+- For PNG images, use `require()` pattern as shown in existing code
+- Icon naming convention: PascalCase with "Icon" prefix for SVG, camelCase for PNG
+
+### Component Reuse
+- **ALWAYS** check existing components in `src/components/` before creating new ones
+- **NEVER** create duplicate components - reuse existing ones
+- If a component exists but needs modification, extend it rather than creating a new one
+- Check `src/components/form-controls/` for form components first
+- Use existing components: `ButtonComponent`, `CardComponent`, `LoadingComponent`, etc.
+- For forms, **ALWAYS** use existing form controls from `src/components/form-controls/`
+- Available form components: `FormikTextInputComponent`, `FormikDropdownComponent`, `FormikDatePickerComponent`, etc.
+- Import existing components: `import ButtonComponent from '../components/ButtonComponent'`
+
+### Form Handling
+- **ONLY** use Formik for form state management
+- **ONLY** use Yup for form validation schemas
+- **ALWAYS** use existing Formik form components from `src/components/form-controls/`
+- **NEVER** create custom form components - use the existing Formik wrapper components
+- Form validation pattern:
+  ```typescript
+  import { Formik } from 'formik';
+  import * as Yup from 'yup';
+  import { FormikTextInputComponent } from '../components/form-controls/FormikTextInputComponent';
+  
+  const validationSchema = Yup.object({
+    email: Yup.string().email('Invalid email').required('Email is required'),
+  });
+  ```
+- Use existing form components: `FormikTextInputComponent`, `FormikDropdownComponent`, `FormikDatePickerComponent`, `FormikCheckBoxComponent`, `FormikRadioButtonComponent`, `FormikToggleSwitchComponent`
+
+### Performance Optimization
+- **ALWAYS** use `useMemo()` for expensive calculations and derived values
+- **ALWAYS** use `useCallback()` for function props passed to child components
+- **ALWAYS** use `React.memo()` for components that receive the same props frequently
+- Pattern for useMemo:
+  ```typescript
+  const expensiveValue = useMemo(() => {
+    return heavyCalculation(data);
+  }, [data]);
+  ```
+- Pattern for useCallback:
+  ```typescript
+  const handlePress = useCallback((id: string) => {
+    onItemPress(id);
+  }, [onItemPress]);
+  ```
+- Pattern for React.memo:
+  ```typescript
+  const MyComponent = React.memo<Props>(({ title, onPress }) => {
+    // component logic
+  });
+  ```
+
+### TypeScript
+- **ALWAYS** declare proper types for:
+  - Component props (use `interface` or `type`)
+  - Function parameters and return types
+  - State variables
+  - API responses
+  - Redux actions and reducers
+- Use TypeScript's strict mode features
+- Avoid using `any` type - use proper typing or `unknown` if needed
+- Export types/interfaces that might be reused across components
+
+### Component Structure
+```typescript
+// 1. Imports (React, React Native, third-party)
+import React, { useMemo, useCallback } from 'react';
+import { View, Text } from 'react-native';
+
+// 2. Constants imports
+import { Colors, FontConfig, CommonStyles, ImageConfig } from '../constants';
+
+// 3. Component imports (check existing components first!)
+import ButtonComponent from '../components/ButtonComponent';
+import CardComponent from '../components/CardComponent';
+
+// 4. Helper imports
+import CommonFunctions from '../helpers/CommonFunctions';
+
+// 5. Type definitions
+interface ComponentNameProps {
+  title: string;
+  onPress: () => void;
+}
+
+// 6. Component
+const ComponentName: React.FC<ComponentNameProps> = ({ title, onPress }) => {
+  // Performance optimization
+  const memoizedValue = useMemo(() => {
+    return expensiveCalculation(title);
+  }, [title]);
+
+  const handlePress = useCallback(() => {
+    onPress();
+  }, [onPress]);
+
+  // Component logic
+  return (
+    <View style={styles.container}>
+      <Text style={CommonStyles.textHeading}>{title}</Text>
+      <ImageConfig.IconCheck width={24} height={24} fill={Colors.primary} />
+      <ButtonComponent title="Press Me" onPress={handlePress} />
+    </View>
+  );
+};
+
+// 7. Styles (at the bottom)
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.backgroundColor,
+  },
+});
+
+// 8. Export
+export default ComponentName;
+```
+
+### Code Quality Checks
+- **AFTER EVERY FEATURE**: Run linter and fix all issues
+  - Run: `npm run lint` or `yarn lint`
+  - Fix all errors and warnings before committing
+- Use ESLint rules properly
+- Format code consistently
+- Remove unused imports and variables
+
+### Best Practices
+- Keep components small and focused (single responsibility)
+- Extract reusable logic into custom hooks or utility functions
+- Use meaningful variable and function names
+- Add proper error handling
+- Use optional chaining (`?.`) and nullish coalescing (`??`) where appropriate
+- Prefer functional components over class components
+- Use React hooks properly (useState, useEffect, useMemo, useCallback)
+
+### File Organization
+- Group related files together
+- Use barrel exports (index.ts) for cleaner imports
+- Keep components in `src/components/`
+- Keep screens in `src/screens/`
+- Keep constants in `src/constants/`
+- Keep helpers in `src/helpers/`
+- Keep shared models/services in `src/shared/`
+
+### Naming Conventions
+- Components: PascalCase (e.g., `ButtonComponent.tsx`)
+- Files: PascalCase for components, camelCase for utilities
+- Variables/Functions: camelCase (e.g., `handlePress`, `userName`)
+- Constants: camelCase exports (e.g., `export const primary = '#DE1D4C'`)
+- Types/Interfaces: PascalCase (e.g., `interface UserData {}`)
+
+### Performance
+- Use `React.memo()` for components that render often with same props
+- Use `useMemo()` for expensive calculations
+- Use `useCallback()` for function props passed to child components
+- Avoid unnecessary re-renders
+- Use `FlatList` instead of `ScrollView` for long lists
+
+### Code Cleanliness
+- Write self-documenting code
+- Add comments only when necessary to explain "why", not "what"
+- Keep functions small and focused
+- Avoid deep nesting (max 3 levels)
+- Use early returns to reduce nesting
+- Remove console.logs before committing
+- Remove commented-out code
+
+### State Management
+- Use Redux for global state (actions, reducers, sagas)
+- Use local state (useState) for component-specific state
+- Keep state as close to where it's used as possible
+- Properly type Redux actions and state
+
+## Mandatory Checklist Before Committing
+- [ ] No inline styles used
+- [ ] No hardcoded colors or fonts
+- [ ] All types properly declared
+- [ ] Common functions used for time/date formatting
+- [ ] Only Google Material Icons used (no custom icons)
+- [ ] Icons imported in ImageConfig.tsx following naming pattern
+- [ ] Icons used from ImageConfig with consistent color/size
+- [ ] Existing components checked and reused (no duplicates created)
+- [ ] Forms use Formik + Yup (no custom form handling)
+- [ ] Existing form components used from form-controls/
+- [ ] useMemo() used for expensive calculations
+- [ ] useCallback() used for function props
+- [ ] React.memo() used for frequently re-rendered components
+- [ ] Lint issues resolved
+- [ ] No console.logs
+- [ ] Code is clean and readable
+- [ ] Imports are organized and unused ones removed
+

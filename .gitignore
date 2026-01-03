@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+srinivasa/node_modules/
+srinivasadriverapp/node_modules/
+
+# iOS
+srinivasa/ios/build/
+srinivasadriverapp/ios/build/
+srinivasa/ios/Pods/
+srinivasadriverapp/ios/Pods/
+srinivasa/ios/.xccheckout
+srinivasa/ios/*.xcworkspace
+srinivasa/ios/*.xcuserdata
+srinivasa/ios/*.moved-aside
+srinivasa/ios/*.pch
+srinivasa/ios/*.apple-samplecode.plist
+srinivasa/ios/DerivedData
+srinivasa/ios/DerivedData/
+srinivasa/ios/DerivedData/*
+srinivasadriverapp/ios/DerivedData
+srinivasadriverapp/ios/DerivedData/
+srinivasadriverapp/ios/DerivedData/*
+
+# Android
+srinivasa/android/build/
+srinivasadriverapp/android/build/
+srinivasa/android/.gradle/
+srinivasadriverapp/android/.gradle/
+srinivasa/android/app/build/
+srinivasadriverapp/android/app/build/
+srinivasa/android/local.properties
+srinivasadriverapp/android/local.properties
+
+# Bundle
+srinivasa/.bundle/
+srinivasadriverapp/.bundle/
+srinivasa/vendor/bundle/
+srinivasadriverapp/vendor/bundle/
+
+# React Native
+srinivasa/.watchmanconfig
+srinivasadriverapp/.watchmanconfig
+
+# Misc
+.DS_Store
+*.swp
+*.log
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
