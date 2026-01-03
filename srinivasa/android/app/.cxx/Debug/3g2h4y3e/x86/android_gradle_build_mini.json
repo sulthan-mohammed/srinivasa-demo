@@ -3,6 +3,7 @@
     "/Users/mohammedsulthan/Desktop/srinivasa-prototype/srinivasa/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/mohammedsulthan/Desktop/srinivasa-prototype/srinivasa/node_modules/@react-native-community/datetimepicker/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/mohammedsulthan/Desktop/srinivasa-prototype/srinivasa/node_modules/react-native-image-picker/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/mohammedsulthan/Desktop/srinivasa-prototype/srinivasa/node_modules/react-native-maps/android/src/main/jni/CMakeLists.txt",
     "/Users/mohammedsulthan/Desktop/srinivasa-prototype/srinivasa/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/mohammedsulthan/Desktop/srinivasa-prototype/srinivasa/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
     "/Users/mohammedsulthan/Desktop/srinivasa-prototype/srinivasa/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt",
@@ -88,6 +89,11 @@
         "/Users/mohammedsulthan/.gradle/caches/9.0.0/transforms/1e84847373c8b60ddb3f088099977c2a/transformed/react-android-0.82.1-debug/prefab/modules/jsi/libs/android.x86/libjsi.so",
         "/Users/mohammedsulthan/.gradle/caches/9.0.0/transforms/5fa135f9220cf0ae1e3ee40cd371125b/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so"
       ]
+    },
+    "react_codegen_RNMapsSpecs::@5748abef1962d24942ec": {
+      "artifactName": "react_codegen_RNMapsSpecs",
+      "abi": "x86",
+      "runtimeFiles": []
     },
     "react_codegen_rnworklets::@68f58d84d4754f193387": {
       "artifactName": "react_codegen_rnworklets",

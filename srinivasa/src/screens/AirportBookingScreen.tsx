@@ -1,170 +1,208 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
-    Text,
     StyleSheet,
-    TouchableOpacity,
-    ScrollView,
     StatusBar,
     SafeAreaView,
-    TextInput,
+    TouchableOpacity,
+    Text,
+    ActivityIndicator,
 } from 'react-native';
 import { Colors, Spacing, BorderRadius, Typography } from '../utils/colors';
-import { LocationIcon, ArrowForwardIcon } from '../components/Icons';
+import { ArrowForwardIcon, CalendarIcon, CloseIcon } from '../components/Icons';
+import AirportModeTabs from '../components/AirportModeTabs';
+import AirportMapView from '../components/AirportMapView';
+import LocationInput from '../components/LocationInput';
+import LocationPermissionModal from '../components/LocationPermissionModal';
+import DateTimePickerModal from '../components/DateTimePickerModal';
+import SearchLocationModal from '../components/SearchLocationModal';
+import { useLocation } from '../hooks/useLocation';
+import moment from 'moment';
 
-type TripType = 'toAirport' | 'fromAirport' | null;
+const GOOGLE_MAPS_API_KEY = 'AIzaSyBw9X_i_hwBXa5wZqIVABtUh9mtOun-pbc';
+const HYDERABAD_AIRPORT = {
+    latitude: 17.2403,
+    longitude: 78.4294,
+    address: 'Rajiv Gandhi International Airport, Hyderabad, Telangana',
+    name: 'Rajiv Gandhi International Airport, Hyderabad',
+};
 
 const AirportBookingScreen = ({ navigation }: any) => {
-    const [tripType, setTripType] = useState<TripType>(null);
-    const [pickup, setPickup] = useState('');
-    const [dropoff, setDropoff] = useState('');
+    const [mode, setMode] = useState<'toAirport' | 'fromAirport'>('toAirport');
+    const { location: currentLocation, loading: locationLoading, permissionDenied, fetchLocation, setPermissionDenied } = useLocation();
+    const [userInput, setUserInput] = useState('');
+    const [showDateTimePicker, setShowDateTimePicker] = useState(false);
+    const [showSearchModal, setShowSearchModal] = useState<{ visible: boolean, type: 'pickup' | 'dropoff' }>({ visible: false, type: 'dropoff' });
+    const [scheduledDateTime, setScheduledDateTime] = useState<{ date: string, time: string } | null>(null);
+    const [selectedLocationCoords, setSelectedLocationCoords] = useState<{ latitude: number, longitude: number } | null>(null);
 
     const handleContinue = () => {
+        const pickup = mode === 'toAirport'
+            ? (currentLocation?.address || 'My Location')
+            : HYDERABAD_AIRPORT.name;
+        const dropoff = mode === 'fromAirport'
+            ? userInput
+            : HYDERABAD_AIRPORT.name;
+
         navigation.navigate('MapRoute', {
-            pickup: tripType === 'fromAirport' ? 'Kempegowda International Airport' : pickup,
-            dropoff: tripType === 'toAirport' ? 'Kempegowda International Airport' : dropoff,
+            pickup,
+            dropoff,
+            scheduledAt: scheduledDateTime ? `${scheduledDateTime.date} ${scheduledDateTime.time}` : null
         });
     };
 
-    const isFormValid = tripType && (tripType === 'fromAirport' ? dropoff : pickup);
+    const isFormValid = mode === 'toAirport'
+        ? (locationLoading || !!currentLocation)
+        : (!!userInput && userInput.length > 2);
+
+    const getMapLocations = () => {
+        if (mode === 'toAirport') {
+            const pickupCoords = selectedLocationCoords || (currentLocation ? { latitude: currentLocation.latitude, longitude: currentLocation.longitude } : null);
+            return {
+                pickup: pickupCoords,
+                dropoff: { latitude: HYDERABAD_AIRPORT.latitude, longitude: HYDERABAD_AIRPORT.longitude },
+            };
+        } else {
+            return {
+                pickup: { latitude: HYDERABAD_AIRPORT.latitude, longitude: HYDERABAD_AIRPORT.longitude },
+                dropoff: selectedLocationCoords,
+            };
+        }
+    };
+
+    const { pickup: mapPickup, dropoff: mapDropoff } = getMapLocations();
 
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                {/* Header */}
-                <View style={styles.header}>
-                    <Text style={styles.title}>Airport Transfer</Text>
-                    <Text style={styles.subtitle}>Fixed pricing, no surge</Text>
-                </View>
 
-                {/* Trip Type Selection */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Select Trip Type</Text>
+            {/* 1. Mode Selector (Top) */}
+            <View style={styles.topSection}>
+                <AirportModeTabs mode={mode} onModeChange={(m) => {
+                    setMode(m);
+                    setUserInput('');
+                }} />
+            </View>
 
-                    <TouchableOpacity
-                        style={[
-                            styles.optionCard,
-                            tripType === 'toAirport' && styles.optionCardSelected,
-                        ]}
-                        onPress={() => {
-                            setTripType('toAirport');
-                            setDropoff('Kempegowda International Airport');
-                        }}
-                        activeOpacity={0.7}
-                    >
-                        <View style={styles.optionContent}>
-                            <Text
-                                style={[
-                                    styles.optionTitle,
-                                    tripType === 'toAirport' && styles.optionTitleSelected,
-                                ]}
-                            >
-                                To Airport
-                            </Text>
-                            <Text style={styles.optionSubtitle}>
-                                Drop-off at Kempegowda Airport
-                            </Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.radioButton,
-                                tripType === 'toAirport' && styles.radioButtonSelected,
-                            ]}
+            {/* 2. Input Fields */}
+            <View style={styles.inputSection}>
+                {mode === 'toAirport' ? (
+                    <>
+                        <LocationInput
+                            label="PICKUP LOCATION"
+                            value={currentLocation?.address || (locationLoading ? 'Fetching location...' : 'My Location')}
+                            onPress={() => setShowSearchModal({ visible: true, type: 'pickup' })}
+                            placeholder="Detecting your location..."
+                            disabled={false}
+                        />
+                        <LocationInput
+                            label="DROP LOCATION"
+                            value={HYDERABAD_AIRPORT.name}
+                            isFixed={true}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <LocationInput
+                            label="PICKUP LOCATION"
+                            value={HYDERABAD_AIRPORT.name}
+                            isFixed={true}
+                        />
+                        <LocationInput
+                            label="DROP LOCATION"
+                            value={userInput}
+                            onPress={() => setShowSearchModal({ visible: true, type: 'dropoff' })}
+                            placeholder="Search drop-off address"
+                            disabled={false}
+                        />
+                    </>
+                )}
+            </View>
+
+            {/* 3. Map (Remaining Space) */}
+            <View style={styles.mapFlexContainer}>
+                <AirportMapView
+                    pickup={mapPickup}
+                    dropoff={mapDropoff}
+                    apiKey={GOOGLE_MAPS_API_KEY}
+                />
+
+                {scheduledDateTime && (
+                    <View style={styles.scheduleBadge}>
+                        <CalendarIcon size={14} color={Colors.cardBackground} />
+                        <Text style={styles.scheduleBadgeText}>
+                            Scheduled: {moment(scheduledDateTime.date).format('MMM DD')} at {moment(scheduledDateTime.time, 'HH:mm').format('hh:mm A')}
+                        </Text>
+                        <TouchableOpacity
+                            onPress={() => setScheduledDateTime(null)}
+                            style={styles.clearScheduleButton}
                         >
-                            {tripType === 'toAirport' && <View style={styles.radioButtonInner} />}
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={[
-                            styles.optionCard,
-                            tripType === 'fromAirport' && styles.optionCardSelected,
-                        ]}
-                        onPress={() => {
-                            setTripType('fromAirport');
-                            setPickup('Kempegowda International Airport');
-                        }}
-                        activeOpacity={0.7}
-                    >
-                        <View style={styles.optionContent}>
-                            <Text
-                                style={[
-                                    styles.optionTitle,
-                                    tripType === 'fromAirport' && styles.optionTitleSelected,
-                                ]}
-                            >
-                                From Airport
-                            </Text>
-                            <Text style={styles.optionSubtitle}>
-                                Pick-up from Kempegowda Airport
-                            </Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.radioButton,
-                                tripType === 'fromAirport' && styles.radioButtonSelected,
-                            ]}
-                        >
-                            {tripType === 'fromAirport' && <View style={styles.radioButtonInner} />}
-                        </View>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Location Inputs */}
-                {tripType && (
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Enter Location</Text>
-
-                        {tripType === 'toAirport' ? (
-                            <View style={styles.inputContainer}>
-                                <LocationIcon size={20} color={Colors.textSecondary} />
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="Enter pickup location"
-                                    placeholderTextColor={Colors.textTertiary}
-                                    value={pickup}
-                                    onChangeText={setPickup}
-                                />
-                            </View>
-                        ) : (
-                            <View style={styles.inputContainer}>
-                                <LocationIcon size={20} color={Colors.textSecondary} />
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="Enter drop-off location"
-                                    placeholderTextColor={Colors.textTertiary}
-                                    value={dropoff}
-                                    onChangeText={setDropoff}
-                                />
-                            </View>
-                        )}
-
-                        <View style={styles.prefilledContainer}>
-                            <LocationIcon size={20} color={Colors.primary} />
-                            <Text style={styles.prefilledText}>
-                                Kempegowda International Airport
-                            </Text>
-                        </View>
+                            <CloseIcon size={12} color={Colors.secondary} />
+                        </TouchableOpacity>
                     </View>
                 )}
-            </ScrollView>
-
-            {/* Continue Button */}
-            <View style={styles.footer}>
-                <TouchableOpacity
-                    style={[
-                        styles.continueButton,
-                        !isFormValid && styles.continueButtonDisabled,
-                    ]}
-                    onPress={handleContinue}
-                    disabled={!isFormValid}
-                    activeOpacity={0.8}
-                >
-                    <Text style={styles.continueButtonText}>Continue</Text>
-                    <ArrowForwardIcon size={20} color={Colors.cardBackground} />
-                </TouchableOpacity>
             </View>
+
+            {/* 4. Action Buttons (Footer) */}
+            <View style={styles.footer}>
+                <View style={styles.buttonRow}>
+                    <TouchableOpacity
+                        style={[styles.actionButton, styles.bookLaterButton]}
+                        onPress={() => setShowDateTimePicker(true)}
+                        activeOpacity={0.8}
+                    >
+                        <CalendarIcon size={18} color={Colors.primary} />
+                        <Text style={styles.bookLaterText}>Book Later</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={[
+                            styles.actionButton,
+                            styles.confirmButton,
+                            !isFormValid && styles.disabledButton
+                        ]}
+                        onPress={handleContinue}
+                        disabled={!isFormValid}
+                        activeOpacity={0.8}
+                    >
+                        {locationLoading && <ActivityIndicator size="small" color={Colors.cardBackground} />}
+                        <Text style={styles.confirmButtonText}>
+                            {scheduledDateTime ? 'Confirm' : 'Book Now'}
+                        </Text>
+                        <ArrowForwardIcon size={18} color={Colors.cardBackground} />
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            {/* Modals */}
+            <LocationPermissionModal
+                visible={permissionDenied}
+                onAllow={() => {
+                    setPermissionDenied(false);
+                    fetchLocation();
+                }}
+                onRetry={() => {
+                    fetchLocation();
+                }}
+            />
+
+            <DateTimePickerModal
+                visible={showDateTimePicker}
+                onClose={() => setShowDateTimePicker(false)}
+                onConfirm={(date, time) => {
+                    setScheduledDateTime({ date, time });
+                    setShowDateTimePicker(false);
+                }}
+            />
+
+            <SearchLocationModal
+                visible={showSearchModal.visible}
+                onClose={() => setShowSearchModal({ ...showSearchModal, visible: false })}
+                onSelect={(loc) => {
+                    setUserInput(loc.name);
+                    setSelectedLocationCoords({ latitude: loc.latitude, longitude: loc.longitude });
+                }}
+            />
         </SafeAreaView>
     );
 };
@@ -174,140 +212,95 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.background,
     },
-    scrollContent: {
-        flexGrow: 1,
-        paddingBottom: Spacing.xl,
+    topSection: {
+        paddingTop: 0,
+        marginTop: -Spacing.sm,
     },
-    header: {
+    inputSection: {
         paddingHorizontal: Spacing.lg,
-        paddingTop: Spacing.xl,
-        paddingBottom: Spacing.lg,
+        paddingBottom: Spacing.sm,
     },
-    title: {
-        ...Typography.h1,
-        color: Colors.textPrimary,
-        marginBottom: Spacing.xs,
+    mapFlexContainer: {
+        flex: 1,
+        position: 'relative',
     },
-    subtitle: {
-        ...Typography.caption,
-        color: Colors.textSecondary,
-    },
-    section: {
-        paddingHorizontal: Spacing.lg,
-        marginTop: Spacing.lg,
-    },
-    sectionTitle: {
-        ...Typography.h3,
-        color: Colors.textPrimary,
-        marginBottom: Spacing.md,
-    },
-    optionCard: {
+    scheduleBadge: {
+        position: 'absolute',
+        top: 16,
+        left: 16,
+        right: 16,
+        backgroundColor: Colors.secondary,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: BorderRadius.full,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: Colors.cardBackground,
-        borderRadius: BorderRadius.lg,
-        padding: Spacing.lg,
-        marginBottom: Spacing.md,
-        borderWidth: 2,
-        borderColor: Colors.border,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+        elevation: 3,
+        zIndex: 100,
     },
-    optionCardSelected: {
-        borderColor: Colors.primary,
-        backgroundColor: '#F5F3FF',
-    },
-    optionContent: {
+    scheduleBadgeText: {
+        ...Typography.small,
+        color: Colors.cardBackground,
+        fontWeight: '700',
+        marginLeft: 8,
         flex: 1,
     },
-    optionTitle: {
-        ...Typography.bodyMedium,
-        color: Colors.textPrimary,
-        marginBottom: Spacing.xs,
-    },
-    optionTitleSelected: {
-        color: Colors.primary,
-    },
-    optionSubtitle: {
-        ...Typography.caption,
-        color: Colors.textSecondary,
-    },
-    radioButton: {
-        width: 24,
-        height: 24,
+    clearScheduleButton: {
+        backgroundColor: Colors.cardBackground,
         borderRadius: BorderRadius.full,
-        borderWidth: 2,
-        borderColor: Colors.border,
+        width: 20,
+        height: 20,
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    radioButtonSelected: {
-        borderColor: Colors.primary,
-    },
-    radioButtonInner: {
-        width: 12,
-        height: 12,
-        borderRadius: BorderRadius.full,
-        backgroundColor: Colors.primary,
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: Colors.cardBackground,
-        borderRadius: BorderRadius.md,
-        padding: Spacing.md,
-        borderWidth: 1,
-        borderColor: Colors.border,
-        marginBottom: Spacing.md,
-    },
-    input: {
-        flex: 1,
-        marginLeft: Spacing.sm,
-        ...Typography.body,
-        color: Colors.textPrimary,
-    },
-    prefilledContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#F5F3FF',
-        borderRadius: BorderRadius.md,
-        padding: Spacing.md,
-        borderWidth: 1,
-        borderColor: Colors.primary,
-    },
-    prefilledText: {
-        flex: 1,
-        marginLeft: Spacing.sm,
-        ...Typography.bodyMedium,
-        color: Colors.primary,
+        marginLeft: 8,
     },
     footer: {
-        paddingHorizontal: Spacing.lg,
-        paddingVertical: Spacing.md,
         backgroundColor: Colors.cardBackground,
+        padding: Spacing.lg,
+        paddingBottom: Spacing.xl,
         borderTopWidth: 1,
         borderTopColor: Colors.borderLight,
     },
-    continueButton: {
+    buttonRow: {
         flexDirection: 'row',
-        backgroundColor: Colors.primary,
+        justifyContent: 'space-between',
+        gap: Spacing.md,
+    },
+    actionButton: {
+        flex: 1,
+        height: 48,
         borderRadius: BorderRadius.md,
-        paddingVertical: Spacing.md,
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: Colors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 4,
     },
-    continueButtonDisabled: {
-        backgroundColor: Colors.border,
-        shadowOpacity: 0,
+    bookLaterButton: {
+        backgroundColor: Colors.background,
+        borderWidth: 1.5,
+        borderColor: Colors.primary,
+        gap: 8,
     },
-    continueButtonText: {
+    confirmButton: {
+        backgroundColor: Colors.primary,
+        gap: 8,
+    },
+    disabledButton: {
+        backgroundColor: Colors.textTertiary,
+        borderColor: Colors.textTertiary,
+    },
+    bookLaterText: {
+        ...Typography.bodyMedium,
+        color: Colors.primary,
+        fontWeight: '600',
+    },
+    confirmButtonText: {
         ...Typography.bodyMedium,
         color: Colors.cardBackground,
-        fontSize: 18,
-        marginRight: Spacing.sm,
+        fontWeight: '600',
     },
 });
 
