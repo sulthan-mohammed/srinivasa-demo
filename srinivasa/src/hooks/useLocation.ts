@@ -3,7 +3,7 @@ import { PermissionsAndroid, Platform } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import axios from 'axios';
 
-const GOOGLE_MAPS_API_KEY = 'AIzaSyBw9X_i_hwBXa5wZqIVABtUh9mtOun-pbc';
+const GOOGLE_MAPS_API_KEY = 'AIzaSyDYjHQx5xcjnoCBw1DcSEINcKulOUE9nvw';
 
 export interface LocationData {
     latitude: number;

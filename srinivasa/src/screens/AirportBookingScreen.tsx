@@ -19,7 +19,7 @@ import SearchLocationModal from '../components/SearchLocationModal';
 import { useLocation } from '../hooks/useLocation';
 import moment from 'moment';
 
-const GOOGLE_MAPS_API_KEY = 'AIzaSyBw9X_i_hwBXa5wZqIVABtUh9mtOun-pbc';
+const GOOGLE_MAPS_API_KEY = 'AIzaSyDYjHQx5xcjnoCBw1DcSEINcKulOUE9nvw';
 const HYDERABAD_AIRPORT = {
     latitude: 17.2403,
     longitude: 78.4294,
@@ -81,6 +81,7 @@ const AirportBookingScreen = ({ navigation }: any) => {
                 <AirportModeTabs mode={mode} onModeChange={(m) => {
                     setMode(m);
                     setUserInput('');
+                    setSelectedLocationCoords(null);
                 }} />
             </View>
 
@@ -122,6 +123,7 @@ const AirportBookingScreen = ({ navigation }: any) => {
             {/* 3. Map (Remaining Space) */}
             <View style={styles.mapFlexContainer}>
                 <AirportMapView
+                    key={mode}
                     pickup={mapPickup}
                     dropoff={mapDropoff}
                     apiKey={GOOGLE_MAPS_API_KEY}

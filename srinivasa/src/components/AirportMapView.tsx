@@ -24,7 +24,7 @@ const AirportMapView = ({ pickup, dropoff, apiKey }: AirportMapViewProps) => {
     useEffect(() => {
         if (pickup && dropoff && mapRef.current) {
             mapRef.current.fitToCoordinates([pickup, dropoff], {
-                edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+                edgePadding: { top: 100, right: 60, bottom: 100, left: 60 },
                 animated: true,
             });
         }
@@ -61,11 +61,14 @@ const AirportMapView = ({ pickup, dropoff, apiKey }: AirportMapViewProps) => {
                 )}
                 {pickup && dropoff && (
                     <MapViewDirections
+                        key={`${pickup.latitude}-${pickup.longitude}-${dropoff.latitude}-${dropoff.longitude}`}
                         origin={pickup}
                         destination={dropoff}
                         apikey={apiKey}
-                        strokeWidth={5}
-                        strokeColor="#000000"
+                        strokeWidth={4}
+                        strokeColor={Colors.primary}
+                        mode="DRIVING"
+                        precision="high"
                         optimizeWaypoints={true}
                         onError={(errorMessage) => {
                             console.log('Directions error: ', errorMessage);
