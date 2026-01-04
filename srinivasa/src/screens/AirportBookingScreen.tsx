@@ -60,8 +60,8 @@ const AirportBookingScreen = ({ navigation }: any) => {
             const pickupData = {
                 latitude: pickupCoords?.latitude || HYDERABAD_AIRPORT.latitude,
                 longitude: pickupCoords?.longitude || HYDERABAD_AIRPORT.longitude,
-                address: mode === 'toAirport' ? (currentLocation?.address || 'My Location') : HYDERABAD_AIRPORT.address,
-                label: mode === 'toAirport' ? (currentLocation?.address || 'My Location') : 'Hyderabad Airport'
+                address: mode === 'toAirport' ? (userInput || currentLocation?.address || 'My Location') : HYDERABAD_AIRPORT.address,
+                label: mode === 'toAirport' ? (userInput || currentLocation?.address || 'My Location') : 'Hyderabad Airport'
             };
 
             const dropoffData = {
@@ -122,9 +122,8 @@ const AirportBookingScreen = ({ navigation }: any) => {
                     <>
                         <LocationInput
                             label="PICKUP LOCATION"
-                            value={currentLocation?.address || (locationLoading ? 'Fetching location...' : 'My Location')}
+                            value={userInput || currentLocation?.address || (locationLoading ? 'Fetching location...' : 'My Location')}
                             onPress={() => {
-                                setSelectedLocationCoords(null);
                                 setShowSearchModal({ visible: true, type: 'pickup' });
                             }}
                             placeholder="Detecting your location..."
@@ -147,8 +146,6 @@ const AirportBookingScreen = ({ navigation }: any) => {
                             label="DROP LOCATION"
                             value={userInput}
                             onPress={() => {
-                                setUserInput('');
-                                setSelectedLocationCoords(null);
                                 setShowSearchModal({ visible: true, type: 'dropoff' });
                             }}
                             placeholder="Search drop-off address"
