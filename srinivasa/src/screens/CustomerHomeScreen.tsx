@@ -21,7 +21,9 @@ import {
     LocationIcon,
     BoltIcon,
     ShieldIcon,
-    TimeIcon
+    TimeIcon,
+    MoneyIcon,
+    CloseIcon,
 } from '../components/Icons';
 import mockData from '../data/mockData.json';
 
@@ -34,8 +36,24 @@ type ServiceType = 'airport' | 'rental' | 'outstation' | null;
 
 const CustomerHomeScreen = ({ navigation }: any) => {
     const [selectedService, setSelectedService] = useState<ServiceType>(null);
-    const [userName, setUserName] = useState('Anand Reddy');
+    const [userName, setUserName] = useState('Guest User');
+    const [userEmail, setUserEmail] = useState('');
     const [city, setCity] = useState('HYD');
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+    useEffect(() => {
+        const loadUserData = async () => {
+            try {
+                const storedName = await AsyncStorage.getItem('userName');
+                const storedEmail = await AsyncStorage.getItem('userEmail');
+                if (storedName) setUserName(storedName);
+                if (storedEmail) setUserEmail(storedEmail);
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        };
+        loadUserData();
+    }, []);
 
     const cities = [
         { label: 'HYD', value: 'HYD' },
@@ -156,6 +174,28 @@ const CustomerHomeScreen = ({ navigation }: any) => {
         }
     };
 
+    const handleAction = (feature: string) => {
+        Alert.alert('Coming Soon', `${feature} feature is currently in progress.`);
+    };
+
+    const handleLogout = () => {
+        Alert.alert(
+            'Logout',
+            'Are you sure you want to log out?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Logout',
+                    style: 'destructive',
+                    onPress: async () => {
+                        await AsyncStorage.setItem('isLoggedIn', 'false');
+                        navigation.replace('Login');
+                    }
+                }
+            ]
+        );
+    };
+
     const getCurrentGreeting = () => {
         const hour = new Date().getHours();
         if (hour < 12) return 'Good Morning';
@@ -167,10 +207,70 @@ const CustomerHomeScreen = ({ navigation }: any) => {
         <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
             <StatusBar barStyle="dark-content" backgroundColor={theme.bg} translucent={false} />
 
+            {/* Side Drawer Overlay */}
+            {isDrawerOpen && (
+                <View style={styles.drawerOverlay}>
+                    <TouchableOpacity
+                        style={styles.drawerBackdrop}
+                        activeOpacity={1}
+                        onPress={() => setIsDrawerOpen(false)}
+                    />
+                    <View style={styles.drawerContent}>
+                        <View style={styles.drawerHeader}>
+                            <View style={styles.drawerProfileCircle}>
+                                <Text style={styles.drawerProfileInitial}>{userName.charAt(0)}</Text>
+                            </View>
+                            <View style={styles.drawerProfileInfo}>
+                                <Text style={styles.drawerProfileName}>{userName}</Text>
+                                <Text style={styles.drawerProfileSub}>{userEmail || 'Srinivasa Premium Member'}</Text>
+                            </View>
+                            <TouchableOpacity onPress={() => setIsDrawerOpen(false)} style={styles.drawerCloseBtn}>
+                                <CloseIcon size={24} color={Colors.textPrimary} />
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={styles.drawerMenu}>
+                            <TouchableOpacity style={styles.drawerMenuItem} onPress={() => handleAction('Ride History')}>
+                                <TimeIcon size={22} color={Colors.primary} />
+                                <Text style={styles.drawerMenuText}>My Rides</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.drawerMenuItem} onPress={() => handleAction('Payments')}>
+                                <MoneyIcon size={22} color={Colors.primary} />
+                                <Text style={styles.drawerMenuText}>Payments</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.drawerMenuItem} onPress={() => handleAction('Safety Support')}>
+                                <ShieldIcon size={22} color={Colors.primary} />
+                                <Text style={styles.drawerMenuText}>Safety & Support</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.drawerMenuItem} onPress={() => handleAction('Referrals')}>
+                                <BoltIcon size={22} color={Colors.primary} />
+                                <Text style={styles.drawerMenuText}>Refer & Earn</Text>
+                            </TouchableOpacity>
+
+                            <View style={styles.drawerDivider} />
+
+                            <TouchableOpacity style={styles.drawerMenuItem} onPress={() => handleAction('Settings')}>
+                                <Text style={styles.drawerMenuTextSecondary}>Settings</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+                                <Text style={styles.logoutText}>Log Out</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={styles.drawerFooter}>
+                            <Text style={styles.versionText}>v1.0.4 Premium</Text>
+                        </View>
+                    </View>
+                </View>
+            )}
+
             {/* Header */}
             <View style={styles.header}>
                 <View style={styles.headerLeft}>
-                    <TouchableOpacity style={styles.menuButton}>
+                    <TouchableOpacity
+                        style={styles.menuButton}
+                        onPress={() => setIsDrawerOpen(true)}
+                    >
                         <View style={styles.menuLine} />
                         <View style={styles.menuLine} />
                         <View style={styles.menuLine} />
@@ -267,7 +367,7 @@ const CustomerHomeScreen = ({ navigation }: any) => {
                 <View style={styles.recentSection}>
                     <Text style={styles.recentLabel}>RECENT</Text>
                     {recentPlaces.map((place, index) => (
-                        <TouchableOpacity key={index} style={styles.recentItem} activeOpacity={0.7}>
+                        <TouchableOpacity key={index} style={styles.recentItem} activeOpacity={0.7} onPress={() => handleAction('Location details')}>
                             <View style={styles.recentIconContainer}>
                                 <TimeIcon size={18} color={Colors.primary} />
                             </View>
@@ -515,6 +615,130 @@ const styles = StyleSheet.create({
     recentSubtitle: {
         ...Typography.small,
         color: Colors.textPrimary,
+    },
+    // Drawer Styles
+    drawerOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 2000,
+        flexDirection: 'row',
+    },
+    drawerBackdrop: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    drawerContent: {
+        width: '80%',
+        height: '100%',
+        backgroundColor: Colors.cardBackground,
+        paddingTop: 60,
+        shadowColor: '#000',
+        shadowOffset: { width: 10, height: 0 },
+        shadowOpacity: 0.1,
+        shadowRadius: 20,
+        elevation: 10,
+    },
+    drawerHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 24,
+        marginBottom: 40,
+        position: 'relative',
+    },
+    drawerProfileCircle: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        backgroundColor: Colors.primary,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 16,
+    },
+    drawerProfileInitial: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: 'white',
+    },
+    drawerProfileInfo: {
+        flex: 1,
+    },
+    drawerProfileName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: Colors.textPrimary,
+    },
+    drawerProfileSub: {
+        fontSize: 12,
+        color: Colors.textSecondary,
+        marginTop: 2,
+    },
+    drawerCloseBtn: {
+        position: 'absolute',
+        top: -30,
+        right: 16,
+        padding: 8,
+    },
+    drawerMenu: {
+        flex: 1,
+        paddingHorizontal: 16,
+    },
+    drawerMenuItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 14,
+        paddingHorizontal: 12,
+        borderRadius: 12,
+        marginBottom: 4,
+    },
+    drawerMenuText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: Colors.textPrimary,
+        marginLeft: 16,
+    },
+    drawerDivider: {
+        height: 1,
+        backgroundColor: Colors.borderLight,
+        marginVertical: 20,
+        marginHorizontal: 12,
+    },
+    drawerMenuTextSecondary: {
+        fontSize: 15,
+        color: Colors.textSecondary,
+        marginLeft: 4,
+    },
+    logoutBtn: {
+        marginTop: 'auto',
+        marginBottom: 20,
+        paddingVertical: 14,
+        paddingHorizontal: 12,
+        backgroundColor: '#FFF1F0',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#FFA39E',
+    },
+    logoutText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#F5222D',
+        textAlign: 'center',
+    },
+    drawerFooter: {
+        padding: 24,
+        borderTopWidth: 1,
+        borderTopColor: Colors.borderLight,
+    },
+    versionText: {
+        fontSize: 12,
+        color: Colors.textTertiary,
+        textAlign: 'center',
     },
 });
 

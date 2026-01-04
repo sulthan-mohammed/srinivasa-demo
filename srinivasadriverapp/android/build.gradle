@@ -12,10 +12,28 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle")
+        classpath("com.android.tools.build:gradle:8.7.3")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    }
+    configurations.all {
+        resolutionStrategy {
+            force 'com.android.tools.build:gradle:8.7.3'
+            force 'com.android.tools.build:gradle-api:8.7.3'
+            force 'com.android.tools.build:gradle-settings-api:8.7.3'
+        }
     }
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+allprojects {
+    configurations.all {
+        resolutionStrategy {
+            force 'com.android.tools.build:gradle:8.7.3'
+            force 'com.android.tools.build:gradle-api:8.7.3'
+            force 'com.android.tools.build:gradle-settings-api:8.7.3'
+        }
+    }
+}
+

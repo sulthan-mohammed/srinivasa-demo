@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     View,
     Text,
@@ -9,23 +9,37 @@ import {
     KeyboardAvoidingView,
     Platform,
     StatusBar,
+    Dimensions,
+    Image,
     ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, Spacing, BorderRadius, Typography } from '../utils/colors';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { ImageConfig } from '../utils';
+
+const { width } = Dimensions.get('window');
+const logo = require('../assets/images/logo.png');
+
+const SignupSchema = Yup.object().shape({
+    name: Yup.string()
+        .min(2, 'Name too short')
+        .required('Full name is required'),
+    email: Yup.string()
+        .email('Invalid email address')
+        .required('Email is required'),
+    password: Yup.string()
+        .min(6, 'Password must be at least 6 characters')
+        .required('Password is required'),
+});
 
 const SignupScreen = ({ navigation }: any) => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
-    const handleSignup = async () => {
-        if (!name || !email || !password) return;
-
+    const handleSignup = async (values: any) => {
         try {
-            await AsyncStorage.setItem('userName', name);
-            await AsyncStorage.setItem('userEmail', email);
-            await AsyncStorage.setItem('userPassword', password);
+            await AsyncStorage.setItem('userName', values.name);
+            await AsyncStorage.setItem('userEmail', values.email);
+            await AsyncStorage.setItem('userPassword', values.password);
             await AsyncStorage.setItem('isLoggedIn', 'true');
 
             navigation.reset({
@@ -40,67 +54,103 @@ const SignupScreen = ({ navigation }: any) => {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
+
+            <View style={styles.topBar}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => navigation.goBack()}
+                >
+                    <ImageConfig.ArrowIcon style={styles.backArrowIcon} />
+                    <Text style={styles.backButtonText}>Back to Login</Text>
+                </TouchableOpacity>
+            </View>
+
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.keyboardView}
             >
                 <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                    <TouchableOpacity
-                        style={styles.backButton}
-                        onPress={() => navigation.goBack()}
-                    >
-                        <Text style={styles.backButtonText}>← Back to Login</Text>
-                    </TouchableOpacity>
-
                     <View style={styles.headerContainer}>
-                        <Text style={styles.title}>Create Account</Text>
-                        <Text style={styles.subtitle}>Join Srinivasa for premium travel</Text>
+                        <Image source={logo} style={styles.logo} resizeMode="contain" />
                     </View>
 
-                    <View style={styles.card}>
-                        <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Full Name</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Enter your full name"
-                                placeholderTextColor={Colors.textTertiary}
-                                value={name}
-                                onChangeText={setName}
-                            />
-                        </View>
+                    <View style={styles.content}>
+                        <Text style={styles.screenTitle}>Create account</Text>
 
-                        <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Email Address</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Enter your email"
-                                placeholderTextColor={Colors.textTertiary}
-                                value={email}
-                                onChangeText={setEmail}
-                                autoCapitalize="none"
-                                keyboardType="email-address"
-                            />
-                        </View>
-
-                        <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Password</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Create a password"
-                                placeholderTextColor={Colors.textTertiary}
-                                value={password}
-                                onChangeText={setPassword}
-                                secureTextEntry
-                            />
-                        </View>
-
-                        <TouchableOpacity
-                            style={styles.signupButton}
-                            onPress={handleSignup}
-                            activeOpacity={0.8}
+                        <Formik
+                            initialValues={{ name: '', email: '', password: '' }}
+                            validationSchema={SignupSchema}
+                            onSubmit={handleSignup}
                         >
-                            <Text style={styles.signupButtonText}>Sign Up</Text>
-                        </TouchableOpacity>
+                            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                                <View>
+                                    <View style={styles.inputContainer}>
+                                        <Text style={styles.label}>Full Name</Text>
+                                        <TextInput
+                                            style={[
+                                                styles.input,
+                                                touched.name && errors.name && styles.inputError
+                                            ]}
+                                            placeholder="Enter your full name"
+                                            placeholderTextColor={Colors.textTertiary}
+                                            value={values.name}
+                                            onChangeText={handleChange('name')}
+                                            onBlur={handleBlur('name')}
+                                        />
+                                        {touched.name && errors.name && (
+                                            <Text style={styles.validationError}>{errors.name}</Text>
+                                        )}
+                                    </View>
+
+                                    <View style={styles.inputContainer}>
+                                        <Text style={styles.label}>Email Address</Text>
+                                        <TextInput
+                                            style={[
+                                                styles.input,
+                                                touched.email && errors.email && styles.inputError
+                                            ]}
+                                            placeholder="Enter your email"
+                                            placeholderTextColor={Colors.textTertiary}
+                                            value={values.email}
+                                            onChangeText={handleChange('email')}
+                                            onBlur={handleBlur('email')}
+                                            autoCapitalize="none"
+                                            keyboardType="email-address"
+                                        />
+                                        {touched.email && errors.email && (
+                                            <Text style={styles.validationError}>{errors.email}</Text>
+                                        )}
+                                    </View>
+
+                                    <View style={styles.inputContainer}>
+                                        <Text style={styles.label}>Password</Text>
+                                        <TextInput
+                                            style={[
+                                                styles.input,
+                                                touched.password && errors.password && styles.inputError
+                                            ]}
+                                            placeholder="Create a password"
+                                            placeholderTextColor={Colors.textTertiary}
+                                            value={values.password}
+                                            onChangeText={handleChange('password')}
+                                            onBlur={handleBlur('password')}
+                                            secureTextEntry
+                                        />
+                                        {touched.password && errors.password && (
+                                            <Text style={styles.validationError}>{errors.password}</Text>
+                                        )}
+                                    </View>
+
+                                    <TouchableOpacity
+                                        style={styles.signupButton}
+                                        onPress={() => handleSubmit()}
+                                        activeOpacity={0.8}
+                                    >
+                                        <Text style={styles.signupButtonText}>Sign Up</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+                        </Formik>
 
                         <View style={styles.footerInfo}>
                             <Text style={styles.footerText}>
@@ -117,47 +167,53 @@ const SignupScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.background,
     },
     keyboardView: {
         flex: 1,
     },
     scrollContent: {
         flexGrow: 1,
-        paddingHorizontal: Spacing.lg,
-        paddingTop: Spacing.md,
+        paddingHorizontal: 22,
+        paddingTop: Spacing.xs,
         paddingBottom: Spacing.xl,
+        justifyContent: 'center',
+    },
+    topBar: {
+        paddingHorizontal: 22,
+        paddingVertical: Spacing.md,
     },
     backButton: {
-        marginBottom: Spacing.xl,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    backArrowIcon: {
+        width: 40,
+        height: 40,
+        marginRight: 8,
+        transform: [{ rotate: '-90deg' }],
+        color: Colors.primary,
     },
     backButtonText: {
         ...Typography.caption,
         color: Colors.primary,
-        fontWeight: '600',
+        fontWeight: '700',
+        fontSize: 16,
     },
     headerContainer: {
-        marginBottom: Spacing.xxl,
+        alignItems: 'center',
+        marginBottom: Spacing.xl,
     },
-    title: {
-        ...Typography.h1,
+    logo: {
+        width: 280,
+        height: 60,
+    },
+    content: {
+        width: '100%',
+    },
+    screenTitle: {
+        ...Typography.h3,
         color: Colors.textPrimary,
-        fontSize: 32,
-    },
-    subtitle: {
-        ...Typography.body,
-        color: Colors.textSecondary,
-        marginTop: 4,
-    },
-    card: {
-        backgroundColor: Colors.cardBackground,
-        borderRadius: BorderRadius.xl,
-        padding: Spacing.xl,
-        shadowColor: Colors.shadowDark,
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.1,
-        shadowRadius: 20,
-        elevation: 10,
+        marginBottom: Spacing.xl,
     },
     inputContainer: {
         marginBottom: Spacing.lg,
@@ -177,6 +233,15 @@ const styles = StyleSheet.create({
         paddingVertical: Platform.OS === 'ios' ? Spacing.md : Spacing.sm,
         ...Typography.body,
         color: Colors.textPrimary,
+    },
+    inputError: {
+        borderColor: Colors.alert,
+    },
+    validationError: {
+        ...Typography.small,
+        color: Colors.alert,
+        marginTop: 4,
+        marginLeft: 4,
     },
     signupButton: {
         backgroundColor: Colors.primary,

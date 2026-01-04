@@ -10,30 +10,39 @@ import {
     Platform,
     StatusBar,
     Dimensions,
+    Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, Spacing, BorderRadius, Typography } from '../utils/colors';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
 const { width } = Dimensions.get('window');
+const logo = require('../assets/images/logo.png');
+
+const LoginSchema = Yup.object().shape({
+    email: Yup.string()
+        .email('Invalid email address')
+        .required('Email is required'),
+    password: Yup.string()
+        .min(6, 'Password must be at least 6 characters')
+        .required('Password is required'),
+});
 
 const LoginScreen = ({ navigation }: any) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState(false);
+    const [loginError, setLoginError] = useState(false);
 
-    const handleLogin = async () => {
-        if (!email || !password) return;
-
+    const handleLogin = async (values: any) => {
         try {
             const storedEmail = await AsyncStorage.getItem('userEmail');
             const storedPassword = await AsyncStorage.getItem('userPassword');
 
-            if (email === storedEmail && password === storedPassword) {
+            if (values.email === storedEmail && values.password === storedPassword) {
                 await AsyncStorage.setItem('isLoggedIn', 'true');
                 navigation.replace('CustomerHome');
             } else {
-                setError(true);
-                setTimeout(() => setError(false), 2000);
+                setLoginError(true);
+                setTimeout(() => setLoginError(false), 3000);
             }
         } catch (e) {
             console.error('Error logging in:', e);
@@ -48,62 +57,75 @@ const LoginScreen = ({ navigation }: any) => {
                 style={styles.keyboardView}
             >
                 <View style={styles.content}>
-                    {/* Background decoration */}
-                    <View style={styles.circle1} />
-                    <View style={styles.circle2} />
-
                     <View style={styles.headerContainer}>
-                        <Text style={styles.brandTitle}>Srinivasa</Text>
-                        <Text style={styles.brandSubtitle}>Premium Cab Booking</Text>
+                        <Image source={logo} style={styles.logo} resizeMode="contain" />
                     </View>
 
                     <View style={styles.card}>
-                        <Text style={styles.loginTitle}>Login</Text>
+                        <Text style={styles.loginTitle}>Login to your account</Text>
 
-                        {error && (
+                        {loginError && (
                             <View style={styles.errorContainer}>
                                 <Text style={styles.errorText}>Invalid credentials. Please try again.</Text>
                             </View>
                         )}
 
-                        <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Email Address</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Enter your email"
-                                placeholderTextColor={Colors.textTertiary}
-                                value={email}
-                                onChangeText={(text) => {
-                                    setEmail(text);
-                                    if (error) setError(false);
-                                }}
-                                autoCapitalize="none"
-                                keyboardType="email-address"
-                            />
-                        </View>
-
-                        <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Password</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Enter your password"
-                                placeholderTextColor={Colors.textTertiary}
-                                value={password}
-                                onChangeText={(text) => {
-                                    setPassword(text);
-                                    if (error) setError(false);
-                                }}
-                                secureTextEntry
-                            />
-                        </View>
-
-                        <TouchableOpacity
-                            style={styles.loginButton}
-                            onPress={handleLogin}
-                            activeOpacity={0.8}
+                        <Formik
+                            initialValues={{ email: '', password: '' }}
+                            validationSchema={LoginSchema}
+                            onSubmit={handleLogin}
                         >
-                            <Text style={styles.loginButtonText}>Login</Text>
-                        </TouchableOpacity>
+                            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                                <View>
+                                    <View style={styles.inputContainer}>
+                                        <Text style={styles.label}>Email Address</Text>
+                                        <TextInput
+                                            style={[
+                                                styles.input,
+                                                touched.email && errors.email && styles.inputError
+                                            ]}
+                                            placeholder="Enter your email"
+                                            placeholderTextColor={Colors.textTertiary}
+                                            value={values.email}
+                                            onChangeText={handleChange('email')}
+                                            onBlur={handleBlur('email')}
+                                            autoCapitalize="none"
+                                            keyboardType="email-address"
+                                        />
+                                        {touched.email && errors.email && (
+                                            <Text style={styles.validationError}>{errors.email}</Text>
+                                        )}
+                                    </View>
+
+                                    <View style={styles.inputContainer}>
+                                        <Text style={styles.label}>Password</Text>
+                                        <TextInput
+                                            style={[
+                                                styles.input,
+                                                touched.password && errors.password && styles.inputError
+                                            ]}
+                                            placeholder="Enter your password"
+                                            placeholderTextColor={Colors.textTertiary}
+                                            value={values.password}
+                                            onChangeText={handleChange('password')}
+                                            onBlur={handleBlur('password')}
+                                            secureTextEntry
+                                        />
+                                        {touched.password && errors.password && (
+                                            <Text style={styles.validationError}>{errors.password}</Text>
+                                        )}
+                                    </View>
+
+                                    <TouchableOpacity
+                                        style={styles.loginButton}
+                                        onPress={() => handleSubmit()}
+                                        activeOpacity={0.8}
+                                    >
+                                        <Text style={styles.loginButtonText}>Login</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+                        </Formik>
 
                         <View style={styles.dummyContentContainer}>
                             <Text style={styles.dummyText}>
@@ -128,7 +150,7 @@ const LoginScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.background,
+        // backgroundColor: Colors.background,
     },
     keyboardView: {
         flex: 1,
@@ -136,61 +158,26 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         justifyContent: 'center',
-        paddingHorizontal: Spacing.lg,
-    },
-    circle1: {
-        position: 'absolute',
-        top: -100,
-        right: -100,
-        width: 300,
-        height: 300,
-        borderRadius: 150,
-        backgroundColor: 'rgba(90, 79, 207, 0.05)', // primary with opacity
-    },
-    circle2: {
-        position: 'absolute',
-        bottom: -50,
-        left: -50,
-        width: 200,
-        height: 200,
-        borderRadius: 100,
-        backgroundColor: 'rgba(90, 79, 207, 0.03)', // primary with opacity
+        // paddingHorizontal: Spacing.lg,
     },
     headerContainer: {
         alignItems: 'center',
-        marginBottom: Spacing.xxl,
+        marginBottom: Spacing.xl,
     },
-    brandTitle: {
-        ...Typography.h1,
-        color: Colors.primary,
-        fontSize: 36,
-        letterSpacing: 1,
-    },
-    brandSubtitle: {
-        ...Typography.caption,
-        color: Colors.textSecondary,
-        marginTop: 4,
-        letterSpacing: 2,
-        textTransform: 'uppercase',
+    logo: {
+        width: 280,
+        height: 60,
     },
     card: {
-        backgroundColor: Colors.cardBackground,
-        borderRadius: BorderRadius.xl,
-        padding: Spacing.xl,
-        shadowColor: Colors.shadowDark,
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.1,
-        shadowRadius: 20,
-        elevation: 10,
+        padding: 22
     },
     loginTitle: {
-        ...Typography.h2,
+        ...Typography.h3,
         color: Colors.textPrimary,
         marginBottom: Spacing.xl,
-        textAlign: 'center',
     },
     errorContainer: {
-        backgroundColor: 'rgba(229, 83, 61, 0.1)', // alert with opacity
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
         padding: Spacing.sm,
         borderRadius: BorderRadius.sm,
         marginBottom: Spacing.md,
@@ -199,6 +186,12 @@ const styles = StyleSheet.create({
         ...Typography.small,
         color: Colors.alert,
         textAlign: 'center',
+    },
+    validationError: {
+        ...Typography.small,
+        color: Colors.alert,
+        marginTop: 4,
+        marginLeft: 4,
     },
     inputContainer: {
         marginBottom: Spacing.lg,
@@ -218,6 +211,9 @@ const styles = StyleSheet.create({
         paddingVertical: Platform.OS === 'ios' ? Spacing.md : Spacing.sm,
         ...Typography.body,
         color: Colors.textPrimary,
+    },
+    inputError: {
+        borderColor: Colors.alert,
     },
     loginButton: {
         backgroundColor: Colors.primary,

@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, StatusBar } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Colors } from '../utils/colors';
-import LoadingComponent from '../components/LoadingComponent.tsx';
+import { Colors, Spacing } from '../utils/colors';
+import { Image } from 'react-native';
+
+const logo = require('../assets/images/logo.png');
 
 const StartupScreen = ({ navigation }: any) => {
     useEffect(() => {
@@ -30,7 +32,7 @@ const StartupScreen = ({ navigation }: any) => {
     return (
         <View style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
-            <LoadingComponent />
+            <Image source={logo} style={styles.logo} resizeMode="contain" />
         </View>
     );
 };
@@ -41,6 +43,10 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.background,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    logo: {
+        width: 280,
+        height: 80,
     },
 });
 
