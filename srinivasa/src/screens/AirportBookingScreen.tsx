@@ -51,24 +51,35 @@ const AirportBookingScreen = ({ navigation }: any) => {
         setConfirmedVehicle(vehicle);
         setSearchingRide(true);
 
-        // Simulate searching for 6 seconds
+        // Simulate searching for 3 seconds
         setTimeout(() => {
             setSearchingRide(false);
-            const pickup = mode === 'toAirport'
-                ? (currentLocation?.address || 'My Location')
-                : HYDERABAD_AIRPORT.name;
-            const dropoff = mode === 'fromAirport'
-                ? userInput
-                : HYDERABAD_AIRPORT.name;
+
+            const { pickup: pickupCoords, dropoff: dropoffCoords } = getMapLocations();
+
+            const pickupData = {
+                latitude: pickupCoords?.latitude || HYDERABAD_AIRPORT.latitude,
+                longitude: pickupCoords?.longitude || HYDERABAD_AIRPORT.longitude,
+                address: mode === 'toAirport' ? (currentLocation?.address || 'My Location') : HYDERABAD_AIRPORT.address,
+                label: mode === 'toAirport' ? (currentLocation?.address || 'My Location') : 'Hyderabad Airport'
+            };
+
+            const dropoffData = {
+                latitude: dropoffCoords?.latitude || HYDERABAD_AIRPORT.latitude,
+                longitude: dropoffCoords?.longitude || HYDERABAD_AIRPORT.longitude,
+                address: mode === 'fromAirport' ? userInput : HYDERABAD_AIRPORT.address,
+                label: mode === 'fromAirport' ? userInput : 'Hyderabad Airport'
+            };
 
             navigation.navigate('MapRoute', {
-                pickup,
-                dropoff,
+                pickup: pickupData,
+                dropoff: dropoffData,
                 vehicle: vehicle.name,
+                vehicleDetails: vehicle,
                 price: vehicle.price,
                 scheduledAt: scheduledDateTime ? `${scheduledDateTime.date} ${scheduledDateTime.time}` : null
             });
-        }, 10000);
+        }, 3000);
     };
 
     const isFormValid = mode === 'toAirport'

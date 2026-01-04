@@ -14,6 +14,9 @@ import MapRouteScreen from '../screens/MapRouteScreen';
 import VehicleSelectionScreen from '../screens/VehicleSelectionScreen';
 import BookingConfirmationScreen from '../screens/BookingConfirmationScreen';
 import ActiveRideScreen from '../screens/ActiveRideScreen';
+import RideInProgressScreen from '../screens/RideInProgressScreen';
+import RidePaymentScreen from '../screens/RidePaymentScreen';
+import RideCompletedScreen from '../screens/RideCompletedScreen';
 import { Colors } from '../utils/colors';
 
 const Stack = createNativeStackNavigator();
@@ -86,8 +89,7 @@ const MainNavigation = () => {
                     name="MapRoute"
                     component={MapRouteScreen}
                     options={{
-                        title: 'Route',
-                        headerBackTitle: 'Back'
+                        headerShown: false,
                     }}
                 />
                 <Stack.Screen
@@ -111,6 +113,27 @@ const MainNavigation = () => {
                     options={{
                         title: 'Your Ride',
                         headerBackTitle: 'Back'
+                    }}
+                />
+                <Stack.Screen
+                    name="RideInProgress"
+                    component={RideInProgressScreen}
+                    options={{
+                        headerShown: false
+                    }}
+                />
+                <Stack.Screen
+                    name="RidePayment"
+                    component={RidePaymentScreen}
+                    options={{
+                        headerShown: false
+                    }}
+                />
+                <Stack.Screen
+                    name="RideCompleted"
+                    component={RideCompletedScreen}
+                    options={{
+                        headerShown: false
                     }}
                 />
             </Stack.Navigator>

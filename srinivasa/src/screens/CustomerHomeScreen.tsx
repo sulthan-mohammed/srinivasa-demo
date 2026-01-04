@@ -165,7 +165,7 @@ const CustomerHomeScreen = ({ navigation }: any) => {
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
-            <StatusBar barStyle="dark-content" backgroundColor={theme.bg} />
+            <StatusBar barStyle="dark-content" backgroundColor={theme.bg} translucent={false} />
 
             {/* Header */}
             <View style={styles.header}>

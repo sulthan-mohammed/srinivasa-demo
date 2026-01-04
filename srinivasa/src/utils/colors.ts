@@ -4,48 +4,48 @@
  */
 
 export const Colors = {
-  // Primary Brand Color - Lavender Purple
-  primary: '#5A4FCF',
-  primaryLight: '#7B72E0',
-  primaryDark: '#4138B2',
+  // Primary Brand Color - Deep Terracotta
+  primary: '#C45748',
+  primaryLight: '#D97F71',
+  primaryDark: '#A13E30',
 
-  // Secondary - Warm Yellow
-  secondary: '#F9A826',
-  secondaryLight: '#FBBC56',
-  secondaryDark: '#E08E0E',
+  // Secondary - Obsidian Charcoal
+  secondary: '#2D2926',
+  secondaryLight: '#4D4D4D',
+  secondaryDark: '#000000',
 
-  // Accent - Soft Lavender
-  accent: '#F5F6FA',
+  // Accent - Soft Blushed Shell (for badges/highlights)
+  accent: '#FDF2F0',
   accentLight: '#FFFFFF',
-  accentDark: '#EAEAEE',
+  accentDark: '#F7E7E5',
 
-  // Success - Muted Mint
-  success: '#2ECCB0',
-  successLight: '#4DD9C0',
-  successDark: '#25B399',
+  // Success - Emerald Mint
+  success: '#10B981',
+  successLight: '#34D399',
+  successDark: '#059669',
 
-  // Alert - Soft Crimson
-  alert: '#E5533D',
-  alertLight: '#EA6F5E',
-  alertDark: '#D13D27',
+  // Alert - Bright Coral
+  alert: '#EF4444',
+  alertLight: '#F87171',
+  alertDark: '#DC2626',
 
   // Neutrals
-  background: '#F5F6FA',
+  background: '#FEF9F8',
   cardBackground: '#FFFFFF',
-  textPrimary: '#1C1C1E',
-  textSecondary: '#5A5A5E',
+  textPrimary: '#111827',
+  textSecondary: '#4B5563',
   textTertiary: '#9CA3AF',
-  border: '#EAEAEE',
-  borderLight: '#F3F4F6',
+  border: '#E8E1DF',
+  borderLight: '#F5EEEB',
 
   // Map & Route
-  routeLine: '#5A4FCF',
-  mapOverlay: 'rgba(90, 79, 207, 0.08)',
+  routeLine: '#C45748',
+  mapOverlay: 'rgba(196, 87, 72, 0.08)',
 
   // Shadows
   shadowLight: 'rgba(0, 0, 0, 0.05)',
   shadowMedium: 'rgba(0, 0, 0, 0.1)',
-  shadowDark: 'rgba(0, 0, 0, 0.15)',
+  shadowDark: 'rgba(1, 1, 1, 0.15)',
 };
 
 export const Spacing = {

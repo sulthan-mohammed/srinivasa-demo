@@ -22,6 +22,7 @@ interface VehicleType {
     description: string;
     eta: string;
     price: string;
+    pricePerKm: number;
     image: any;
     isEV?: boolean;
 }
@@ -34,6 +35,7 @@ const VEHICLES: VehicleType[] = [
         description: 'Open air ride, affordable',
         eta: '3 min',
         price: '₹349',
+        pricePerKm: 12,
         image: require('../assets/vehicles/auto.png'),
     },
     {
@@ -43,6 +45,7 @@ const VEHICLES: VehicleType[] = [
         description: 'Comfy hatchbacks',
         eta: '5 min',
         price: '₹749',
+        pricePerKm: 18,
         image: require('../assets/vehicles/mini.png'),
     },
     {
@@ -52,6 +55,7 @@ const VEHICLES: VehicleType[] = [
         description: 'Eco-friendly electric sedan',
         eta: '6 min',
         price: '₹899',
+        pricePerKm: 22,
         image: require('../assets/vehicles/ev.png'),
         isEV: true,
     },
@@ -62,6 +66,7 @@ const VEHICLES: VehicleType[] = [
         description: 'Spacious 6-seater SUVs',
         eta: '8 min',
         price: '₹1,249',
+        pricePerKm: 30,
         image: require('../assets/vehicles/suv.png'),
     },
     {
@@ -71,6 +76,7 @@ const VEHICLES: VehicleType[] = [
         description: 'Premium 8-seater minivan',
         eta: '12 min',
         price: '₹1,899',
+        pricePerKm: 45,
         image: require('../assets/vehicles/minivan.png'),
     },
 ];

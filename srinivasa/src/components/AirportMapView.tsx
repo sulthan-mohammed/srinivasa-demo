@@ -48,10 +48,11 @@ interface Location {
 interface AirportMapViewProps {
     pickup: Location | null;
     dropoff: Location | null;
+    driver?: Location | null;
     apiKey: string;
 }
 
-const AirportMapView = ({ pickup, dropoff, apiKey }: AirportMapViewProps) => {
+const AirportMapView = ({ pickup, dropoff, driver, apiKey }: AirportMapViewProps) => {
     const mapRef = useRef<MapView>(null);
     const [dummyVehicles, setDummyVehicles] = React.useState<VehicleData[]>([]);
 
@@ -181,6 +182,28 @@ const AirportMapView = ({ pickup, dropoff, apiKey }: AirportMapViewProps) => {
                             console.log('Directions error: ', errorMessage);
                         }}
                     />
+                )}
+                {driver && pickup && (
+                    <>
+                        <Marker
+                            coordinate={driver}
+                            anchor={{ x: 0.5, y: 0.5 }}
+                        >
+                            <Image
+                                source={VEHICLE_IMAGES.car}
+                                style={{ width: 42, height: 42 }}
+                                resizeMode="contain"
+                            />
+                        </Marker>
+                        <MapViewDirections
+                            origin={driver}
+                            destination={pickup}
+                            apikey={apiKey}
+                            strokeWidth={3}
+                            strokeColor={Colors.secondary}
+                            mode="DRIVING"
+                        />
+                    </>
                 )}
             </MapView>
         </View>
