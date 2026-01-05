@@ -97,6 +97,16 @@ android {
         versionName "1.0"
         resValue "string", "build_config_package", defaultConfig.applicationId
     }
+    
+    aaptOptions {
+        cruncherEnabled = false
+    }
+    
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -109,7 +119,10 @@ android {
         debug {
             signingConfig signingConfigs.debug
             applicationIdSuffix ".debug"
-            manifestPlaceholders.appName = appName + " (debug)"
+            manifestPlaceholders = [
+                appName: appName + " (debug)",
+                usesCleartextTraffic: "true"
+            ]
         }
         staging {
             if (project.hasProperty('versionCode')) {
@@ -122,7 +135,10 @@ android {
             matchingFallbacks = ['release']
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            manifestPlaceholders.appName = appName + " (staging)"
+            manifestPlaceholders = [
+                appName: appName + " (staging)",
+                usesCleartextTraffic: "true"
+            ]
             applicationIdSuffix ".staging"
         }
         qa {
@@ -136,7 +152,10 @@ android {
             matchingFallbacks = ['release']
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            manifestPlaceholders.appName = appName + " (QA)"
+            manifestPlaceholders = [
+                appName: appName + " (QA)",
+                usesCleartextTraffic: "true"
+            ]
             applicationIdSuffix ".qa"
         }
         uat {
@@ -150,7 +169,10 @@ android {
             matchingFallbacks = ['release']
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            manifestPlaceholders.appName = appName + " (uat)"
+            manifestPlaceholders = [
+                appName: appName + " (uat)",
+                usesCleartextTraffic: "false"
+            ]
             applicationIdSuffix ".uat"
         }
         release {
@@ -162,7 +184,10 @@ android {
             if (project.hasProperty('versionName')) {
                 defaultConfig.versionName = project.property('versionName')
             }
-            manifestPlaceholders.appName = appName
+            manifestPlaceholders = [
+                appName: appName,
+                usesCleartextTraffic: "false"
+            ]
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
