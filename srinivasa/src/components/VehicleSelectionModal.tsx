@@ -28,16 +28,16 @@ interface VehicleType {
 }
 
 const VEHICLES: VehicleType[] = [
-    {
-        id: '1',
-        name: 'Auto',
-        capacity: 3,
-        description: 'Open air ride, affordable',
-        eta: '3 min',
-        price: '₹349',
-        pricePerKm: 12,
-        image: require('../assets/vehicles/auto.png'),
-    },
+    // {
+    //     id: '1',
+    //     name: 'Auto',
+    //     capacity: 3,
+    //     description: 'Open air ride, affordable',
+    //     eta: '3 min',
+    //     price: '₹349',
+    //     pricePerKm: 12,
+    //     image: require('../assets/vehicles/auto.png'),
+    // },
     {
         id: '2',
         name: 'Prime Mini',

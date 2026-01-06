@@ -8,11 +8,11 @@ import { PickupMarker, DestinationMarker } from './Icons';
 
 // Re-import vehicle PNGs for map markers
 const VEHICLE_IMAGES: { [key: string]: any } = {
-    car: require('../assets/vehicles/mini.png'),
-    auto: require('../assets/vehicles/auto.png'),
-    ev: require('../assets/vehicles/ev.png'),
-    suv: require('../assets/vehicles/suv.png'),
-    minivan: require('../assets/vehicles/minivan.png'),
+    car: require('../assets/vehicles/mapCarImage.png'),
+    auto: require('../assets/vehicles/mapCarImage.png'),
+    ev: require('../assets/vehicles/mapCarImage.png'),
+    suv: require('../assets/vehicles/mapCarImage.png'),
+    minivan: require('../assets/vehicles/mapCarImage.png'),
 };
 
 const { width, height } = Dimensions.get('window');
